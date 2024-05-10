@@ -1,14 +1,14 @@
 export const THEME_CONFIG: App.Locals['config'] = {
   /** blog title */
-  title: "FBL",
+  title: "朝花夕拾",
   /** your name */
-  author: "Typography",
+  author: "范博林",
   /** website description */
   desc: "Rediscory the beauty of typography",
   /** your deployed domain */
-  website: "https://astro-theme-typography.vercel.app/",
+  website: "https://fbl.pages.dev",
   /** your locale */
-  locale: "en-us",
+  locale: "zh-cn",
   /** theme style */
   themeStyle: "light",
   /** your socials */
