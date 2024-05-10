@@ -9,26 +9,26 @@ from datetime import timedelta, datetime
 import requests
 from github import Github
 
-NOTE_DIR = "src/content/note"
-NOTE_IMG = "public/img/note"
+NOTE_DIR = "src/content/posts"
+NOTE_IMG = "public/img/posts"
 
 TABLE_DIR = {
-    "note": {
-        "img": "public/img/note",
-        "dir": "src/content/note",
-        "ref_dir": "(../../../public/img/note/{})"
+    "posts": {
+        "img": "public/img/posts",
+        "dir": "src/content/posts",
+        "ref_dir": "(../../../public/img/posts/{})"
     }
 }
-DIR = TABLE_DIR["note"]
+DIR = TABLE_DIR["posts"]
 
 IMG_SAVE_LOCAL = True
 
 class Article:
     def __init__(self, var1, var2, var3, var4):
-        self.pubDatetime = var1
+        self.pubDate = var1
         self.title = var2
         self.slug = var3
-        self.tags = var4
+        self.categories = var4
 def move_first_to_last(my_list):
     if len(my_list) >= 2:
         first_element = my_list.pop(0)
@@ -38,40 +38,40 @@ def get_article_attrs(file_path:str):
         with open(file_path, 'r', encoding='utf-8') as f:
             lines = f.readlines()
         hasTag = False
-        tags = []
+        categories = []
         slug = None
         title = None
         for line in lines:
             line = line.replace("\n", "")
-            if "pubDatetime" in line:
-                pubDatetime = line.split(": ", 1)[1]
+            if "pubDate" in line:
+                pubDate = line.split(": ", 1)[1]
             if "title" in line:
                 title = line.split(": ", 1)[1]
             if "slug" in line:
                 slug = line.split(": ", 1)[1]
             if hasTag and "- " in line:
-                tagstr = line.split('"')
-                if tagstr.__len__() >= 2:
-                    tagstr = line.split("- ")
-                tags.append(tagstr[1])
-            if "tags" in line: hasTag = True
+                categoriestr = line.split('"')
+                if categoriestr.__len__() >= 2:
+                    categoriestr = line.split("- ")
+                categories.append(categoriestr[1])
+            if "categories" in line: hasTag = True
             if title and "---" in line:
                 break
-        return Article(pubDatetime, title, slug, tags)
+        return Article(pubDate, title, slug, categories)
     except Exception as e:
         print(file_path )
 def init_archives_table_readme():
-    url = "/note/"
+    url = "/posts/"
     # 指定目录路径
-    directory_path = "./src/content/note"
+    directory_path = "./src/content/posts"
     article_url = '<li class="mt-3 mb-3"><a href="{}">{}</a></li>'
     m_d = {}
     # 使用os.listdir()获取目录下所有文件和文件夹的列表
     file_list = os.listdir(directory_path)
-    file_list = sorted(file_list, key=lambda x: get_article_attrs(os.path.join(directory_path, x)).pubDatetime, reverse=True)
+    file_list = sorted(file_list, key=lambda x: get_article_attrs(os.path.join(directory_path, x)).pubDate, reverse=True)
     for file in file_list:
         title = file.split(".")[0]
-        month = get_article_attrs(os.path.join(directory_path, file)).pubDatetime[0:7]
+        month = get_article_attrs(os.path.join(directory_path, file)).pubDate[0:7]
         if m_d.get(month) is None:
             m_d[month] = []
         m_d[month].append(article_url.format(url + title, title, ))
@@ -104,7 +104,7 @@ def init_archives_table_readme():
     with open(file_path, 'w', encoding='utf-8') as file:
         for month, article in m_d.items():
             tlist.append(TimeLineElement.format(month, "\n".join(article)))
-        file.write(start.format("note", "\n".join(tlist)))
+        file.write(start.format("posts", "\n".join(tlist)))
 
 def get_json_data():
     with open("src/issue.json", "r") as file:
@@ -144,18 +144,17 @@ def main(token, repo_name, issue_number=None):
         if no_finish:
             continue
         global DIR
-        DIR = TABLE_DIR["note"]
+        DIR = TABLE_DIR["posts"]
         check_dir( DIR["dir"])
         check_dir( DIR["img"])
         save_issue(issue, me)
         add_issue_id(issue.number)
-        init_archives_table_readme()
+        # init_archives_table_readme()
 
 
 template = '''---
-pubDatetime: {}
-title: {}
-slug: {}'''
+pubDate: {}
+title: {}'''
 
 def download_image_file(url, file_name):
     r = requests.get(url)
@@ -183,7 +182,7 @@ def save_issue(issue, me):
     title = f"{issue.title.replace('/', '-').replace(' ', '.')}"
     #  判断title是否包含时间
     dt = (issue.created_at + timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S")
-    temp = template.format(dt, title, title)
+    temp = template.format(dt, title)
     md_name = os.path.join(
         DIR["dir"], f"{issue.title.replace('/', '-').replace(' ', '.')}.md"
     )
@@ -192,7 +191,7 @@ def save_issue(issue, me):
         f.write(temp)
         f.write("\n")
         if len(labels) > 0:
-            f.write('''tags:\n''')
+            f.write('''categories:\n''')
         for l in labels:
             f.write(f'- "{l.name}"\n')
         f.write("---\n")
