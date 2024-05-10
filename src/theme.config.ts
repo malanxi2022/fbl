@@ -1,6 +1,6 @@
 export const THEME_CONFIG: App.Locals['config'] = {
   /** blog title */
-  title: "活版印字",
+  title: "FBL",
   /** your name */
   author: "Typography",
   /** website description */
@@ -13,22 +13,7 @@ export const THEME_CONFIG: App.Locals['config'] = {
   themeStyle: "light",
   /** your socials */
   socials: [
-    {
-      name: "github",
-      href: "https://github.com/moeyua/astro-theme-typography",
-    },
-    {
-      name: "rss",
-      href: "/atom.xml",
-    },
-    {
-      name: "twitter",
-      href: "https://github.com/moeyua/astro-theme-typography",
-    },
-    {
-      name: "mastodon",
-      href: "https://github.com/moeyua/astro-theme-typography",
-    }
+    
   ],
   /** your header info */
   header: {
@@ -47,11 +32,7 @@ export const THEME_CONFIG: App.Locals['config'] = {
     {
       name: "Categories",
       href: "/categories"
-    },
-    {
-      name: "About",
-      href: "/about",
-    },
+    }
   ],
   /** your category name mapping, which the `path` will be shown in the url */
   category_map: [
